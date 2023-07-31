@@ -27,34 +27,47 @@ export default function AnimatedArrow(props) {
 
     useEffect(() => {
         const fn = async () => {
+            let timingsRaw = [0.2, 0.15, 1.5, 0.15, 0.15]
+            const total = timingsRaw.reduce((prev, curr) => prev + curr, 0)
+            const timingPercentages = timingsRaw.map((t) => t / total)
+            const timings = timingPercentages.map(
+                (t) => t * props.animationDuration
+            )
+
             await new Promise<void>((resolve) => {
                 setTimeout(() => {
                     resolve()
-                }, 200)
+                }, Math.floor(timings[0] * 1000))
             })
             await opacityAnimation.start({
                 opacity: [0, 1],
-                transition: { duration: 0.15 },
+                transition: { duration: timings[1] },
             })
+            lineAnimation.set({ opacity: 1 })
             await lineAnimation.start({
                 pathLength: [0, 1],
-                transition: { duration: 1.5 },
+                transition: { duration: timings[2] },
             })
 
             arrowAnimation1.set({ opacity: 1 })
             await arrowAnimation1.start({
                 pathLength: [0, 1],
-                transition: { duration: 0.15 },
+                transition: { duration: timings[3] },
             })
 
             arrowAnimation2.set({ opacity: 1 })
             await arrowAnimation2.start({
                 pathLength: [0, 1],
-                transition: { duration: 0.15 },
+                transition: { duration: timings[4] },
             })
         }
         fn()
-    }, [lineAnimation, arrowAnimation1, arrowAnimation2])
+    }, [
+        lineAnimation,
+        props.animationDuration,
+        arrowAnimation1,
+        arrowAnimation2,
+    ])
 
     if (!dimensions) {
         return <div ref={rootRef} />
@@ -84,7 +97,7 @@ export default function AnimatedArrow(props) {
                     // Apply the animation controls to the path element
                     animate={lineAnimation}
                     // Set initial state of the path's stroke-dasharray (to be animated)
-                    initial={{ pathLength: 0 }}
+                    initial={{ pathLength: 0, opacity: 0 }}
                 />
                 <motion.line
                     x1="275"
@@ -116,6 +129,7 @@ export default function AnimatedArrow(props) {
 AnimatedArrow.defaultProps = {
     strokeWidth: 5,
     color: "#000",
+    animationDuration: 2.0,
 }
 
 addPropertyControls(AnimatedArrow, {
@@ -126,5 +140,9 @@ addPropertyControls(AnimatedArrow, {
     color: {
         type: ControlType.Color,
         title: "Color",
+    },
+    animationDuration: {
+        type: ControlType.Number,
+        title: "Animation Duration",
     },
 })

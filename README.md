@@ -1,3 +1,10 @@
 # framer-components
 
-Open source framer components. Take a look in the `components/` directory to see the components
+Open source components for [Framer](https://www.framer.com/).
+
+## List of components
+
+1. [Animated squiggle](components/animated-squiggle.tsx)
+
+![Animated squiggle animation](components/animated-squiggle.gif | width=100)
+
